@@ -10,11 +10,14 @@
     </parent>
     <groupId>com.gurung.authentication</groupId>
     <artifactId>authentication-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>authentication-service</name>
     <description>authentication-service</description>
     <properties>
         <java.version>18</java.version>
+        <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
+        <checkstyle.version>9.2</checkstyle.version>
+        <annotations.version>3.0.1</annotations.version>
     </properties>
     <dependencies>
         <dependency>
@@ -23,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -61,15 +64,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.23.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${annotations.version}</version>
         </dependency>
     </dependencies>
 
@@ -85,6 +87,50 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <excludes>**/generated/**/*</excludes>
+                    <configLocation>codechecks/checkstyle.xml</configLocation>
+                    <suppressionsLocation>codechecks/checkstyleSuppressions.xml</suppressionsLocation>
+                    <includeResources>true</includeResources>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <includeTestResources>true</includeTestResources>
+                    <includes>**\/*.java</includes>
+                    <resourceIncludes>**\/*.(xml)|(properties)</resourceIncludes>
+                    <consoleOutput>true</consoleOutput>
+                    <propertyExpansion>checkstyle.config.location=codechecks</propertyExpansion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <failOnViolation>true</failOnViolation>
+                            <violationSeverity>error</violationSeverity>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
         </plugins>
