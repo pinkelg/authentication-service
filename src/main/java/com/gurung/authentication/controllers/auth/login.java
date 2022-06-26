@@ -52,6 +52,7 @@ public class login {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@Valid @RequestBody UserNameAndPasswordLoginRequest userNameAndPasswordLoginRequest) {
+        log.debug("Validating credentials for user {}", userNameAndPasswordLoginRequest.getUsername());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userNameAndPasswordLoginRequest.getUsername(), userNameAndPasswordLoginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -61,7 +62,7 @@ public class login {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
+        log.info("User {} successfully logged In", userDetails.getEmail());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserNameAndPasswordLoginResponse(
                         userDetails.getId(),
